@@ -1,0 +1,21 @@
+
+{% extends "base.html" %}
+{% block page_content %} 
+<h3>HOME PAGE</h3>
+<table border=1>
+	<thead>
+		<td>CID</td>
+		<td>Title</td>
+		<td>Author</td>
+	</thead>
+{% for row in rows %}
+	<tr>
+		<td>{{row["CID"]}}</td>
+		<td>{{row["name"]}}</td>
+		<td>{{row["author"]}}</td>
+	</tr>
+{% endfor %}
+</table>
+
+{% endblock %}
+

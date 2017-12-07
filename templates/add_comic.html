@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+<h3>ADD A COMIC ON THIS PAGE</h3>
+<form action="{{ url_for('submit_add_comic') }}" method="POST">
+	Name
+	<input type ="text" name="name" /></br>
+	
+	Author
+	<input type="text" name="author" /></br>
+
+	<input type="submit" value="submit" />
+</form>
+{% endblock %}
