@@ -1,18 +1,22 @@
 
 {% extends "base.html" %}
 {% block page_content %} 
-<h3>HOME PAGE</h3>
+<h3>The database currently contains {{count}} comics.</h3>
 <table border=1>
 	<thead>
 		<td>CID</td>
 		<td>Title</td>
 		<td>Author</td>
+		<td>Issue Number</td>
+		<td>Description</td>
 	</thead>
 {% for row in rows %}
 	<tr>
-		<td>{{row["CID"]}}</td>
-		<td>{{row["name"]}}</td>
-		<td>{{row["author"]}}</td>
+		<td>{{ row["CID"] }}</td>
+		<td>{{ row["title"] }}</td>
+		<td>{{ row["author"] }}</td>
+		<td>{{ row["issueNumber"] }}</td>
+		<td>{{ row["description"] }}</td>
 	</tr>
 {% endfor %}
 </table>

@@ -2,15 +2,20 @@ from flask import Flask, render_template, request, redirect, url_for
 import sqlite3 as sql
 app = Flask(__name__)
 
+
 @app.route('/')
 def home():
 	con = sql.connect("database.db")
 	con.row_factory = sql.Row
 
 	cur = con.cursor()
-	cur.execute("select * from comics")
+
+	cur.execute("SELECT COUNT(*) from comics")
+	count = cur.fetchone()[0]
+
+	cur.execute("select * from comics limit 1000")
 	rows = cur.fetchall()
-	return render_template('home.html', rows = rows)
+	return render_template('home.html', rows = rows, count = count)
 
 @app.route('/add')
 def add_comic():

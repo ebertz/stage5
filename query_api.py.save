@@ -1,0 +1,13 @@
+import md5
+import requests
+
+hash = md5.new()
+public_key = 
+url = 'http://gateway.marvel.com/v1/public/comics'
+params = {'apikey': '4933b5ad40b6ffa295fee233cb8bb9fb'}
+
+response = requests.get(url, params)
+
+print(response)
+
+4933b5ad40b6ffa295fee233cb8bb9fb
