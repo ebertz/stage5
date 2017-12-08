@@ -20,7 +20,7 @@ def home():
 	else:
 		cur.execute("SELECT COUNT(*) from comics")
 		count = cur.fetchone()[0]
-		cur.execute("select * from comics limit 1000")
+		cur.execute("select * from comics limit 10")
 
 	rows = cur.fetchall()
 	return render_template('home.html', rows = rows, count = count, q = q)
@@ -59,7 +59,12 @@ def submit_add_comic():
 
 @app.route('/search')
 def advanced_search():
+
+
 	return render_template('advanced_search.html')
 	
+
+
+
 if __name__ == '__main__':
 	app.run(debug = True)
