@@ -26,16 +26,32 @@ def select_function():
 		exit(0)
 
 def add_users():
-	pass
+	cmd = input("Delete existing USERS database? [y/n]")
+	if cmd is "y":
+		cur.execute('drop table users')
+		cur.execute(
+			'CREATE TABLE users(#ADD SCHEME HERE)')
 
 def add_reviews():
-	pass
+	cmd = input("Delete existing REVIEWS database? [y/n]")
+	if cmd is "y":
+		cur.execute('drop table reviews')
+		cur.execute(
+			'CREATE TABLE reviews(#ADD SCHEME HERE)')
 
 def add_listings():
-	pass
+	cmd = input("Delete existing LISTINGS database? [y/n]")
+	if cmd is "y":
+		cur.execute('drop table listings')
+		cur.execute(
+			'CREATE TABLE listings(#ADD SCHEME HERE)')
 
 def add_purchases():
-	pass
+	cmd = input("Delete existing PURCHASES database? [y/n]")
+	if cmd is "y":
+		cur.execute('drop table purchases')
+		cur.execute(
+			'CREATE TABLE purchases(#ADD SCHEME HERE)')
 
 
 def add_comics():
@@ -44,13 +60,7 @@ def add_comics():
 	offset = count
 
 	print('Database currently contains ' + str(count) + ' comics.')
-	cmd = input("Delete existing database? [y/n]")
-	if cmd is "y":
-		cur.execute('drop table comics')
-		cur.execute(
-			'CREATE TABLE comics(CID INTEGER PRIMARY KEY, title TEXT, issueNumber INTEGER, author TEXT, description TEXT)')
-		print('initialized empty database')
-		count = 0;
+
 
 	#hash API keys
 	timestamp = b'1'
