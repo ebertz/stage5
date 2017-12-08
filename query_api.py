@@ -30,28 +30,31 @@ def add_users():
 	if cmd is "y":
 		cur.execute('drop table users')
 		cur.execute(
-			'CREATE TABLE users(#ADD SCHEME HERE)')
+			'CREATE TABLE users(UID INTEGER PRIMARY KEY, name TEXT, email TEXT, age INTEGER)')
+
 
 def add_reviews():
 	cmd = input("Delete existing REVIEWS database? [y/n]")
 	if cmd is "y":
 		cur.execute('drop table reviews')
 		cur.execute(
-			'CREATE TABLE reviews(#ADD SCHEME HERE)')
+			'CREATE TABLE reviews(RID INTEGER PRIMARY KEY, user TEXT, CID INTEGER, date TEXT, rating INTEGER, body TEXT, FOREIGN KEY(CID) REFERENCES comics(CID)')
+
 
 def add_listings():
 	cmd = input("Delete existing LISTINGS database? [y/n]")
 	if cmd is "y":
 		cur.execute('drop table listings')
 		cur.execute(
-			'CREATE TABLE listings(#ADD SCHEME HERE)')
+			'CREATE TABLE listings(LID INTEGER PRIMARY KEY, seller TEXT, buyer TEXT, CID INTEGER, price INTEGER, date TEXT, FOREIGN KEY(CID) REFERENCES comics(CID))')
+
 
 def add_purchases():
 	cmd = input("Delete existing PURCHASES database? [y/n]")
 	if cmd is "y":
 		cur.execute('drop table purchases')
 		cur.execute(
-			'CREATE TABLE purchases(#ADD SCHEME HERE)')
+			'CREATE TABLE purchases(PID INTEGER PRIMARY KEY, UID INTEGER, CID INTEGER, date TEXT, FOREIGN KEY(CID) REFERENCES comics(CID), FOREIGN KEY(UID) REFERENCES users(UID)')
 
 
 def add_comics():
