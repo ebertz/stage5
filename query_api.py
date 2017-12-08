@@ -9,8 +9,8 @@ con = sql.connect("database.db")
 con.row_factory = sql.Row
 cur = con.cursor()
 
-def select_function:
-	op = input("Add entries to which table?\n1. Comics\n2. Users\n3. Reviews\n4. Listings\n5. Purchases")
+def select_function():
+	op = int(input("Add entries to which table?\n1. Comics\n2. Users\n3. Reviews\n4. Listings\n5. Purchases"))
 	if op is 1:
 		add_comics()
 	elif op is 2:
