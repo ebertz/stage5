@@ -7,15 +7,27 @@ app = Flask(__name__)
 def home():
 	con = sql.connect("database.db")
 	con.row_factory = sql.Row
-
 	cur = con.cursor()
 
-	cur.execute("SELECT COUNT(*) from comics")
-	count = cur.fetchone()[0]
+	q = request.args.get('q', type = str)
 
-	cur.execute("select * from comics limit 1000")
+	if q is not None:
+		q = '%' + q + '%'
+		cur.execute("SELECT COUNT(*) from comics where title like ?", (q,))
+		count = cur.fetchone()[0]
+		cur.execute("select * from comics where title like ? limit 1000", (q,))
+
+	else:
+		cur.execute("SELECT COUNT(*) from comics")
+		count = cur.fetchone()[0]
+		cur.execute("select * from comics limit 1000")
+
+
+
+
+
 	rows = cur.fetchall()
-	return render_template('home.html', rows = rows, count = count)
+	return render_template('home.html', rows = rows, count = count, q = q)
 
 @app.route('/add')
 def add_comic():
@@ -26,10 +38,12 @@ def submit_add_comic():
 	try:
 		name = request.form['name']
 		author = request.form['author']
+		issueNumber = request.form['issueNumber']
+		description = request.form['description']
 
 		with sql.connect("database.db") as con:
 			cur = con.cursor()
-			cur.execute("INSERT INTO comics VALUES (?,?,?)", (None,name,author) )
+			cur.execute("INSERT INTO comics VALUES (?,?,?,?,?)", (None,name,author, issueNumber, description) )
 		con.commit()
 		con.close()
 		return redirect(url_for("home"))

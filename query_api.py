@@ -37,7 +37,8 @@ if cmd > 100000:
 
 print('Adding ' + str(cmd) + 'comics to the database.')
 max_entries = offset + cmd
-while offset < max_entries:
+total_added = 0
+while total_added < cmd:
 	params = {'apikey':public_key,
 		 'ts':timestamp,
 		 'hash':hash.hexdigest(),
@@ -52,7 +53,7 @@ while offset < max_entries:
 	data = input_dict['data']['results']
 
 
-
+	comics_added = 0
 	for comic in data:
 		name = ""
 		#print(str(list(comic['creators'].items())))
@@ -60,13 +61,21 @@ while offset < max_entries:
 			name = list(comic['creators'].items())[2][1][1]['name']
 		except:
 			pass
+		#skip incomplete entries
+		if name is "":
+			continue
+		if comic['description'] is None:
+			continue
+
 		#print(type(thing))
 		#for schema comic (CID, title, issue, author, description, image
 		cur.execute('INSERT into comics VALUES(?,?,?,?,?)',
 					(None, comic['title'], comic['issueNumber'], name, comic['description']))
+		comics_added += 1
 	con.commit()
 	offset += 100
-	print('added 100 entries to comics database. TOTAL ENTRIES = ' + str(offset))
+	total_added += comics_added
+	print('added '+ str(comics_added) + ' entries to comics database. TOTAL ENTRIES = ' + str(count + total_added))
 
 con.close()
 
