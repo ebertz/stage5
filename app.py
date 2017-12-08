@@ -22,12 +22,19 @@ def home():
 		count = cur.fetchone()[0]
 		cur.execute("select * from comics limit 1000")
 
-
-
-
-
 	rows = cur.fetchall()
 	return render_template('home.html', rows = rows, count = count, q = q)
+
+
+@app.route('/comic/<int:cid>')
+def comic(cid):
+	con = sql.connect("database.db")
+	con.row_factory = sql.Row
+	cur = con.cursor()
+
+	cur.execute("select * from comics where CID = ?", (cid,))
+	row = cur.fetchone()
+	return render_template('comic.html', row = row)
 
 @app.route('/add')
 def add_comic():

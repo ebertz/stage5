@@ -1,9 +1,9 @@
 
 {% extends "base.html" %}
 {% block page_content %}
-query = {{q}}
+
 <h3>The database currently contains {{count}} comics.</h3>
-<table border=1>
+<table class="table-striped table-bordered">
 	<thead>
 		<td>CID</td>
 		<td>Title</td>
@@ -14,7 +14,7 @@ query = {{q}}
 {% for row in rows %}
 	<tr>
 		<td>{{ row["CID"] }}</td>
-		<td>{{ row["title"] }}</td>
+		<td><a href="{{url_for('comic', cid=row['CID'])}}">{{ row["title"] }} </a></td>
 		<td>{{ row["author"] }}</td>
 		<td>{{ row["issueNumber"] }}</td>
 		<td>{{ row["description"] }}</td>

@@ -39,18 +39,25 @@ print('Adding ' + str(cmd) + 'comics to the database.')
 max_entries = offset + cmd
 total_added = 0
 while total_added < cmd:
+	limit = min(100, cmd - total_added)
+
 	params = {'apikey':public_key,
 		 'ts':timestamp,
 		 'hash':hash.hexdigest(),
 		 'format':'comic',
 		 'formatType':'comic',
-		 'limit':'100',
+		 'limit':str(limit),
 		 'offset':str(offset)
 		}
 
+
 	response = requests.get(url, params)
 	input_dict = json.loads(response.content.decode())
-	data = input_dict['data']['results']
+	try:
+		data = input_dict['data']['results']
+	except:
+		offset += 100
+		continue
 
 
 	comics_added = 0
