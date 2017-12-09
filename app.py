@@ -20,7 +20,7 @@ def home():
 	else:
 		cur.execute("SELECT COUNT(*) from comics")
 		count = cur.fetchone()[0]
-		cur.execute("select * from comics limit 10")
+		cur.execute("select * from comics limit 1000")
 
 	rows = cur.fetchall()
 	return render_template('home.html', rows = rows, count = count, q = q)
@@ -34,7 +34,14 @@ def comic(cid):
 
 	cur.execute("select * from comics where CID = ?", (cid,))
 	row = cur.fetchone()
-	return render_template('comic.html', row = row)
+
+	cur.execute("select l.*, u.name from listings as l, users as u WHERE l.UID = u.UID AND l.CID = ?", (cid,))
+	listings = cur.fetchall()
+
+	cur.execute("select r.*, u.name from reviews as r, users as u WHERE r.userID = u.UID AND  r.CID = ?", (cid,))
+	reviews = cur.fetchall()
+
+	return render_template('comic.html', row = row, listings = listings, reviews = reviews)
 
 @app.route('/add')
 def add_comic():
@@ -47,10 +54,11 @@ def submit_add_comic():
 		author = request.form['author']
 		issueNumber = request.form['issueNumber']
 		description = request.form['description']
+		image = request.form['image']
 
 		with sql.connect("database.db") as con:
 			cur = con.cursor()
-			cur.execute("INSERT INTO comics VALUES (?,?,?,?,?)", (None,name,author, issueNumber, description) )
+			cur.execute("INSERT INTO comics VALUES (?,?,?,?,?,?)", (None,name,author, issueNumber, description,image) )
 		con.commit()
 		con.close()
 		return redirect(url_for("home"))
@@ -59,9 +67,16 @@ def submit_add_comic():
 
 @app.route('/search')
 def advanced_search():
+	con = sql.connect("database.db")
+	con.row_factory = sql.Row
+	cur = con.cursor()
 
 
-	return render_template('advanced_search.html')
+	listings = cur.execute('SELECT l.price, l.date, c.title, u.name from listings as l, comics as c, users as u WHERE l.UID = u.UID AND c.CID = l.CID').fetchall()
+
+
+	con.close()
+	return render_template('advanced_search.html', listings = listings)
 	
 
 

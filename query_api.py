@@ -2,6 +2,7 @@ import json
 import hashlib
 import requests
 import sqlite3 as sql
+import random
 
 
 
@@ -25,43 +26,132 @@ def select_function():
 		print("select a value [1-5]")
 		exit(0)
 
+def rand_date():
+	date = ""
+	date += str(random.randint(1, 12)) + '/'
+	date += str(random.randint(1, 28)) + '/'
+	date += str(random.randint(2005, 2017))
+	return date
+
 def add_users():
 	cmd = input("Delete existing USERS database? [y/n]")
 	if cmd is "y":
-		cur.execute('drop table users')
 		cur.execute(
-			'CREATE TABLE users(UID INTEGER PRIMARY KEY, name TEXT, email TEXT, age INTEGER)')
+			'CREATE TABLE IF NOT EXISTS users(UID INTEGER PRIMARY KEY, name TEXT, email TEXT, age INTEGER)')
+		cur.execute('DELETE from users')
+		con.commit()
 
+	letters = 'abcdefghijklmnopqrstuvwxyz'
+	num=int(input("add how many?"))
+	for i in range(num):
+		name = ""
+		for k in range(random.randint(4,12)):
+			name += random.choice(letters)
+		email = name + random.choice(['@gmail.com', '@wisc.edu', '@hotmail.com', '@email.net', '@yahoo.com'])
+		age = random.randint(15,55)
+
+		cur.execute('INSERT INTO users VALUES(?,?,?,?)', (None, name, email, age))
+	con.commit()
 
 def add_reviews():
 	cmd = input("Delete existing REVIEWS database? [y/n]")
 	if cmd is "y":
-		cur.execute('drop table reviews')
 		cur.execute(
-			'CREATE TABLE reviews(RID INTEGER PRIMARY KEY, user TEXT, CID INTEGER, date TEXT, rating INTEGER, body TEXT, FOREIGN KEY(CID) REFERENCES comics(CID)')
+			'CREATE TABLE IF NOT EXISTS reviews(RID INTEGER PRIMARY KEY, userID INTEGER, CID INTEGER, date TEXT, rating INTEGER, body TEXT, FOREIGN KEY(CID) REFERENCES comics(CID),FOREIGN KEY(userID) REFERENCES users(UID))')
+		cur.execute('DELETE from reviews')
+		con.commit()
+
+	body_list = ['This comic was terrible!', 'This issue was pretty dissapointing.', 'It was a decent read, but I was hoping for more', 'A great and exciting story!', 'One of my favorite comics of all time!']
+
+	cur.execute('SELECT * FROM comics ORDER BY RANDOM()')
+	comics = cur.fetchall()
+
+	num = int(input('add how many reviews?'))
+	cur.execute('SELECT COUNT(*) FROM users')
+	num_users = cur.fetchone()[0]
+	cur.execute('SELECT COUNT(*) FROM comics')
+	num_comics = cur.fetchone()[0]
+
+	for i in range(num):
+
+		date = rand_date()
+		rating = random.randint(1,5)
+		body = body_list[rating - 1]
+		cid = comics[random.randint(1,num_comics - 1)]['CID']
+		uid = random.randint(1,num_users - 1)
+		#uid = users[i]['UID']
+		cur.execute('INSERT INTO reviews VALUES(?,?,?,?,?,?)', (None, uid, cid, date, rating, body))
+
+	con.commit()
+	con.close()
+
 
 
 def add_listings():
 	cmd = input("Delete existing LISTINGS database? [y/n]")
 	if cmd is "y":
-		cur.execute('drop table listings')
 		cur.execute(
-			'CREATE TABLE listings(LID INTEGER PRIMARY KEY, seller TEXT, buyer TEXT, CID INTEGER, price INTEGER, date TEXT, FOREIGN KEY(CID) REFERENCES comics(CID))')
+			'CREATE TABLE IF NOT EXISTS listings(LID INTEGER PRIMARY KEY, UID INTEGER, CID INTEGER, price REAL, date TEXT, FOREIGN KEY(CID) REFERENCES comics(CID), FOREIGN KEY(UID) REFERENCES users(UID))')
+		cur.execute('DELETE from listings')
+		con.commit()
+
+	cur.execute('SELECT COUNT(*) FROM users')
+	num_users = cur.fetchone()[0]
+	cur.execute('SELECT COUNT(*) FROM comics')
+	num_comics = cur.fetchone()[0]
+
+	num = int(input('add how many?'))
+	for i in range(num):
+		uid = random.randint(1,num_users - 1)
+		cid = random.randint(1, num_comics - 1)
+		price = random.randint(0,12)
+		price += (float(random.randint(0,99))/100)
+		date = rand_date()
+
+		cur.execute('INSERT INTO listings VALUES(?,?,?,?,?)', (None, uid, cid, price, date))
+	con.commit()
+	con.close()
+
+
+
 
 
 def add_purchases():
 	cmd = input("Delete existing PURCHASES database? [y/n]")
 	if cmd is "y":
-		cur.execute('drop table purchases')
 		cur.execute(
-			'CREATE TABLE purchases(PID INTEGER PRIMARY KEY, UID INTEGER, CID INTEGER, date TEXT, FOREIGN KEY(CID) REFERENCES comics(CID), FOREIGN KEY(UID) REFERENCES users(UID)')
+			'CREATE TABLE IF NOT EXISTS purchases(PID INTEGER PRIMARY KEY, seller INTEGER, buyer INTEGER,  CID INTEGER, date TEXT, FOREIGN KEY(CID) REFERENCES comics(CID), FOREIGN KEY(seller) REFERENCES users(UID),FOREIGN KEY(buyer) REFERENCES users(UID))')
+		cur.execute('DELETE from purchases')
+		con.commit()
+
+	cur.execute('SELECT COUNT(*) FROM users')
+	num_users = cur.fetchone()[0]
+	cur.execute('SELECT COUNT(*) FROM comics')
+	num_comics = cur.fetchone()[0]
+	num = int(input('add how many?'))
+	for i in range(num):
+		seller = random.randint(1, num_users - 1)
+		buyer = random.randint(1, num_users - 1)
+		cid = random.randint(1, num_comics - 1)
+		date = rand_date()
+		cur.execute('INSERT INTO purchases VALUES(?,?,?,?,?)', (None, seller, buyer, cid, date))
+	con.commit()
+	con.close()
 
 
 def add_comics():
+
+
+	cmd = input("Delete existing COMICS database? [y/n]")
+	if cmd is "y":
+		cur.execute(
+			'CREATE TABLE IF NOT EXISTS comics(CID INTEGER PRIMARY KEY, title TEXT, issueNumber INTEGER, author TEXT, description TEXT, image TEXT)')
+		cur.execute('DELETE from comics')
+		con.commit()
+
 	cnt = cur.execute("SELECT COUNT(*) from comics")
 	count = cur.fetchone()[0]
 	offset = count
-
 	print('Database currently contains ' + str(count) + ' comics.')
 
 
@@ -108,10 +198,13 @@ def add_comics():
 
 		comics_added = 0
 		for comic in data:
+
+			image = ""
 			name = ""
 			#print(str(list(comic['creators'].items())))
 			try:
 				name = list(comic['creators'].items())[2][1][1]['name']
+				image = comic['thumbnail']['path'] + '.' + comic['thumbnail']['extension']
 			except:
 				pass
 			#skip incomplete entries
@@ -122,8 +215,8 @@ def add_comics():
 
 			#print(type(thing))
 			#for schema comic (CID, title, issue, author, description, image
-			cur.execute('INSERT into comics VALUES(?,?,?,?,?)',
-						(None, comic['title'], comic['issueNumber'], name, comic['description']))
+			cur.execute('INSERT into comics VALUES(?,?,?,?,?,?)',
+						(None, comic['title'], comic['issueNumber'], name, comic['description'], image))
 			comics_added += 1
 		con.commit()
 		offset += 100

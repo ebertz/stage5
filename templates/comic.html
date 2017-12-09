@@ -3,19 +3,62 @@
 {% block page_content %}
 
 
+<div class="container" style="margin: 10px;">
 
-<div class="container" style="border:1px solid black; margin: 10px; padding: 20px">
-    <div class="row">
-        <div class="col-sm 4 md 6">
+    <div class="row" style="border: 1px solid black">
+        <div class="col-sm 4 md 6" style="margin:0px">
+             <img src="{{ row["image"] }}" style="float:left;margin:10px;width:300px;height:450px;">
              <h2>{{ row['title'] }}</h2>
-             <h4> Written By: {{ row['author'] }}</h4><br><br>
-
-            <p>{{row['description']}}</p>
+             <h4> Written By: {{ row['author'] }}</h4>
+             <h4 style="margin:20px">Description</h4>
+             <p>{{row['description']}}</p>
 
         </div>
+    </div>
+    <div class="row" style="border: 1px solid black">
+        <div class="col-sm 4 md 6" style="margin:15px">
 
 
+            <h4> LISTINGS</h4>
+            <table class="table-striped table-bordered">
+            <thead>
+                <td>Price</td>
+                <td>Seller</td>
+                <td>Date Posted</td>
+            </thead>
+            {% for list in listings %}
+            <tr>
+                <td>${{ list["price"] }} </td>
+                <td>{{ list["name"] }}</td>
+                <td>{{ list["date"] }}</td>
+            </tr>
+            {% endfor %}
+            </table>
 
+        </div>
+    </div>
+    <div class="row" style="border: 1px solid black">
+        <div class="col-sm 4 md 6" style="margin:15px">
+
+            <h4>REVIEWS</h4>
+            <table class="table-striped table-bordered">
+            <thead>
+                <td>User</td>
+                <td>Rating</td>
+                <td>Review</td>
+                <td>Date Poster</td>
+            </thead>
+            {% for review in reviews %}
+	        <tr>
+                <td>{{review["name"] }}</td>
+                <td><script type="text/javascript"> for(i=0; i < {{ review["rating"] }}; i++) document.write("&#9733");</script> </td>
+		        <td>{{ review["body"] }}</td>
+		        <td>{{ review["date"] }}</td>
+	        </tr>
+            {% endfor %}
+            </table>
+
+        </div>
     </div>
 
 
