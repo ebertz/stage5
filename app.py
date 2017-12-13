@@ -43,39 +43,109 @@ def results():
 	con.row_factory = sql.Row
 	cur = con.cursor()
 
-	type = request.form['type']
+	_type = request.form['type']
 	#build search query from strings
 	_select = "SELECT "
-	_from = "FROM "
-	_where = "WHERE "
-
+	_from = " FROM "
+	_where = " WHERE "
+	_args = ()
+	print(_type.encode())
 	#build query based on appropriate table
-	if type is 'c':
+	if _type == "c":
 		min_rating = request.form['min']
-		min_rating = request.form['max']
-		print(min_rating)
+		max_rating = request.form['max']
+		title = request.form['title']
+		author = request.form['author']
+		cid = request.form['id']
+
 		_select += "c.*"
 		_from += "comics as c"
 
+		if min_rating != "":
+			_where += "(SELECT avg(r.rating) FROM reviews as r WHERE r.CID = c.CID) >= ?"
+			_args = _args + tuple([int(min_rating)])
 
-	elif type is 'l':
-		_select += "l.*"
-		_from += "listings as l"
+		if max_rating != "":
+			if _where != " WHERE ":
+				_where +=" AND "
+			_where += "(SELECT avg(r.rating) FROM reviews as r WHERE r.CID = c.CID) <= ?"
+			_args = _args + tuple([int(max_rating)])
 
-	elif type is 'r':
+		if title != "":
+			if _where != " WHERE ":
+				_where +=" AND "
+			_where += " title LIKE ?"
+			arg_str = "%" + title + "%"
+			_args += tuple([arg_str])
+		if author != "":
+			if _where != " WHERE ":
+				_where +=" AND "
+			_where += " author LIKE ?"
+			arg_str = "%" + author + "%"
+			_args += tuple([arg_str])
+		if cid != "":
+			if _where != " WHERE ":
+				_where +=" AND "
+			_where += " CID = ?"
+			_args += tuple([int(cid)])
+
+
+
+	elif _type == 'l':
+		_select += "l.*, c.title, c.author"
+		_from += "listings as l, comics as c"
+		min_price = request.form['min']
+		max_price = request.form['max']
+		title = request.form['title']
+		author = request.form['author']
+		seller = request.form['seller']
+
+		if min_price != "":
+			_where += "price > ?"
+			_args = _args + tuple([float(min_price)])
+
+		if max_price != "":
+			if _where != " WHERE ":
+				_where +=" AND "
+			_where += "price < ?"
+			_args = _args + tuple([float(max_price)])
+
+		if title != "":
+			if _where != " WHERE ":
+				_where +=" AND "
+			_where += " title LIKE ?"
+			arg_str = "%" + title + "%"
+			_args += tuple([arg_str])
+		if author != "":
+			if _where != " WHERE ":
+				_where +=" AND "
+			_where += " author LIKE ?"
+			arg_str = "%" + author + "%"
+			_args += tuple([arg_str])
+		if seller != "":
+			if _where != " WHERE ":
+				_where +=" AND "
+			_where += " UID = ?"
+			_args += tuple([int(seller)])
+		if _where != " WHERE ":
+			_where += " AND "
+			_where +=" c.CID = l.cid "
+
+	elif _type == 'r':
 		_select += "r.*"
 		_from += "reviews as r"
 
 
 	#drop where clause if no filters given
-	if _where is "WHERE":
+	if _where is "WHERE ":
 		_where = ""
-
-	#query = _select + _from + _where
-	#cur.execute(query)
-	#results = cur.fetchall()
-	results = None
-	return render_template('results.html', type=type, results=results)
+	_where += " limit 1000"
+	query = _select + _from + _where
+	print(query)
+	cur.execute(query, (_args))
+	results = cur.fetchall()
+	print(_args)
+	return render_template('results.html', type=_type, results=results)
 
 
 

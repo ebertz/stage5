@@ -2,5 +2,44 @@
 
 {% block page_content %}
 Search Results
-{{type}}
+{% if type == "c" %}
+	<table class="table-striped table-bordered">
+		<thead>
+			<td>CID</td>
+			<td>Title</td>
+			<td>Author</td>
+			<td>Issue Number</td>
+			<td>Description</td>
+		</thead>
+	{% for row in results %}
+		<tr>
+			<td>{{ row["CID"] }}</td>
+			<td><a href="{{url_for('comic', cid=row['CID'])}}">{{ row["title"] }} </a></td>
+			<td>{{ row["author"] }}</td>
+			<td>{{ row["issueNumber"] }}</td>
+			<td>{{ row["description"] }}</td>
+		</tr>
+	{% endfor %}
+	</table>
+{% endif %}
+{% if type == "l" %}
+	<table class="table-striped table-bordered">
+		<thead>
+			<td>LID</td>
+			<td>Title</td>
+			<td>Author</td>
+			<td>Price</td>
+		</thead>
+	{% for listing in results %}
+		<tr>
+			<td>{{ listing["LID"] }}</td>
+			<td><a href="{{url_for('comic', cid=listing['CID'])}}">{{ listing["title"] }}</a></td>
+			<td>{{ listing["author"] }}</td>
+			<td>${{ listing["price"] }}</td>
+		</tr>
+	{% endfor %}
+	</table>
+
+
+{% endif %}
 {% endblock %}

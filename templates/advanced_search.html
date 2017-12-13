@@ -33,11 +33,11 @@
 <div id="Listing" class="tabcontent" style="display:None">
   <h3>Search Listings</h3>
    <form action="{{ url_for('results') }}" method="POST">
-    Seller<input type="text" name="seller"><br>
+    Seller ID<input type="number" name="seller"><br>
     Title<input type="text" name="title"><br>
     Author<input type="text" name="author"><br>
     Price<br>
-    Min: <input type="number" name="min"> Max: <input type="number" name="max"><br>
+    Min: <input type="number" step="0.01" name="min"> Max: <input type="number" step="0.01" name="max"><br>
     <input type="hidden" name="type" value="l">
     <input type="Submit" value="Submit">
    </form>
@@ -46,12 +46,19 @@
 <div id="Review" class="tabcontent" style="display:None">
 
   <h3>Search Reviews</h3>
+  <form action="{{ url_for('results') }}" method="POST" style="float:right;text-align:right;">
+      <h3>Search Comics</h3>
 
-   <form action="{{ url_for('results') }}" method="POST">
+    Title<input type="text" name="title"><br>
+    Author<input type="text" name="author" ><br>
+    Comic ID<input type="number" name="id" ><br><br>
 
+    Rating<br>
+    Min: <input type="number" name="min" style="width:100px"> Max: <input type="number" name="max" style="width:100px"><br>
     <input type="hidden" name="type" value="r">
     <input type="Submit" value="Submit">
-   </form>
+
+  </form>
 </div>
 
 
