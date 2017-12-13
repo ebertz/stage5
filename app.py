@@ -205,7 +205,7 @@ def submit_bulk_file():
 		except:
 			return redirect(url_for("add_comic"))
 		# check if the post request has the file part
-		print(f.filename)
+		#print(f.filename)
 
 		if allowed_file(f.filename):
 			filename = secure_filename(f.filename)
@@ -223,7 +223,7 @@ def submit_bulk_file():
 							image = value_array[4]
 
 							check = cur.execute("INSERT INTO comics VALUES (?,?,?,?,?,?)", (None,name,author,issueNumber,description,image))
-							print(check)
+							#print(check)
 
 					f.close()
 				con.commit()
