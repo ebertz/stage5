@@ -2,25 +2,123 @@
 {% extends "base.html" %}
 {% block page_content %}
 
-<h3>The database currently contains {{count}} comics.</h3>
-<table class="table-striped table-bordered">
-	<thead>
-		<td>CID</td>
-		<td>Title</td>
-		<td>Author</td>
-		<td>Issue Number</td>
-		<td>Description</td>
-	</thead>
-{% for row in rows %}
-	<tr>
-		<td>{{ row["CID"] }}</td>
-		<td><a href="{{url_for('comic', cid=row['CID'])}}">{{ row["title"] }} </a></td>
-		<td>{{ row["author"] }}</td>
-		<td>{{ row["issueNumber"] }}</td>
-		<td>{{ row["description"] }}</td>
-	</tr>
-{% endfor %}
-</table>
+<div class="tab">
+  <button class="tablinks active" onclick="select_tab(event, 'Comic')"><h4>Comics</h4></button>
+  <button class="tablinks" onclick="select_tab(event, 'Listing')"><h4>Listings</h4></button>
+  <button class="tablinks" onclick="select_tab(event, 'Review')"><h4>Reviews</h4></button>
+	<button class="tablinks" onclick="select_tab(event, 'Purchase')"><h4>Purchases</h4></button>
+  <button class="tablinks" onclick="select_tab(event, 'User')"><h4>Users</h4></button>
+</div>
+
+<div id="Comic" class="tabcontent">
+	<h3>The database currently contains {{count}} comics.</h3>
+	<table class="table-striped table-bordered">
+		<thead>
+			<td>CID</td>
+			<td>Title</td>
+			<td>Author</td>
+			<td>Issue Number</td>
+			<td>Description</td>
+		</thead>
+	{% for row in rows %}
+		<tr>
+			<td>{{ row["CID"] }}</td>
+			<td><a href="{{url_for('comic', cid=row['CID'])}}">{{ row["title"] }} </a></td>
+			<td>{{ row["author"] }}</td>
+			<td>{{ row["issueNumber"] }}</td>
+			<td>{{ row["description"] }}</td>
+		</tr>
+	{% endfor %}
+	</table>
+</div>
+
+<div id="Listing" class="tabcontent" style="display:None">
+	<h3>The database currently contains {{l_count}} listings.</h3>
+
+	<table class="table-striped table-bordered">
+		<thead>
+			<td>LID</td>
+			<td>Title</td>
+			<td>Author</td>
+			<td>Price</td>
+			<td>Seller</td>
+		</thead>
+	{% for listing in listings %}
+		<tr>
+			<td>{{ listing["LID"] }}</td>
+			<td><a href="{{url_for('comic', cid=listing['CID'])}}">{{ listing["title"] }}</a></td>
+			<td>{{ listing["author"] }}</td>
+			<td>${{ listing["price"] }}</td>
+			<td>{{ listing["name"] }}</td>
+		</tr>
+	{% endfor %}
+	</table>
+</div>
+
+<div id="Review" class="tabcontent" style="display:None">
+	<h3>The database currently contains {{r_count}} reviews.</h3>
+	<table class="table-striped table-bordered">
+		<thead>
+			<td>Title</td>
+			<td>Author</td>
+			<td>Rating</td>
+			<td>Review Number</td>
+			<td>User</td>
+		</thead>
+	{% for review in reviews %}
+		<tr>
+			<td><a href="{{url_for('comic', cid=review['CID'])}}">{{ review["title"] }}</a></td>
+			<td>{{ review["author"] }}</td>
+			<td>{{ review["rating"] }}</td>
+			<td>{{ review["body"] }}</td>
+			<td>{{ review["name"] }}</td>
+		</tr>
+	{% endfor %}
+	</table>
+</div>
+
+<div id="Purchase" class="tabcontent" style="display:None">
+	<h3>The database currently contains {{p_count}} purchases.</h3>
+	<table class="table-striped table-bordered">
+		<thead>
+			<td>Name</td>
+			<td>Title</td>
+			<td>Author</td>
+			<td>Date Purchased</td>
+
+		</thead>
+	{% for purchase in purchases %}
+		<tr>
+			<td>{{ purchase["name"] }}</td>
+			<td><a href="{{url_for('comic', cid=purchase['CID'])}}">{{ purchase["title"] }}</a></td>
+			<td>{{ purchase["author"] }}</td>
+			<td>{{ purchase["date"] }}</td>
+		</tr>
+	{% endfor %}
+	</table>
+</div>
+
+<div id="User" class="tabcontent" style="display:None">
+	<h3>The database currently contains {{u_count}} users.</h3>
+	<table class="table-striped table-bordered">
+		<thead>
+			<td>UID</td>
+			<td>Username</td>
+			<td>E-Mail</td>
+			<td>Age</td>
+		</thead>
+	{% for user in users %}
+		<tr>
+			<td>{{ user["UID"] }}</td>
+			<td>{{ user["name"] }}</td>
+			<td>{{ user["email"] }}</td>
+			<td>{{ user["age"] }}</td>
+		</tr>
+	{% endfor %}
+	</table>
+</div>
+
+
 
 {% endblock %}
 

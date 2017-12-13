@@ -5,31 +5,74 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
 	<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 	<title>ComicDB</title>
+	<style type="text/css">
+		div.tab {
+			overflow: hidden;
+			border: 1px solid #ccc;
+			background-color: #f1f1f1;
+		}
+
+		/* Style the buttons inside the tab */
+		div.tab button {
+			background-color: inherit;
+			float: left;
+			border: none;
+			outline: none;
+			cursor: pointer;
+			padding: 14px 16px;
+			transition: 0.3s;
+		}
+
+		/* Change background color of buttons on hover */
+		div.tab button:hover {
+			background-color: #ddd;
+		}
+
+		/* Create an active/current tablink class */
+		div.tab button.active {
+			background-color: #ccc;
+	}
+
+	</style>
+	<script type="text/javascript">
+    function select_tab(evt, tab_name) {
+        //hide all tab content
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        //set all tabs inactive
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        // show current tab and set active
+        document.getElementById(tab_name).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+
+	</script>
+
 	{% block head %} {% endblock %}
 </head>
 <body>
 
 	<nav class="navbar navbar-inverse">
-	<div class="container-fluid">		
-		<div class="navbar-header">
-			<a class="navbar-brand" href="{{url_for("home")}}"> HOME </a>
-		</div>
-		<ul class="nav navbar-nav">	
-			<li>
-				<form class="navbar-form navbar-left" role="search" method="get" action="{{url_for("home")}}">
+	<div class="container-fluid">
 
-				<input type="text" class="form-control" name="q" value="">
-				<button type="submit" class="btn btn-default">
-					Search
-				</button>
-				</form>
+		<ul class="nav navbar-nav">
 			<li>
-				<a href="{{url_for("advanced_search")}}"> 
-					<span class="glyphicon glyphicon-search" aria-hidden="true"></span>&nbsp;Advanced Search &nbsp;&nbsp;
+
+				<a class="navbar-brand" href="{{url_for("home")}}"> <span class="glyphicon glyphicon-th" aria-hidden="true"></span> Browse</a>&nbsp;&nbsp;&nbsp;&nbsp;
+			</li>
+
+			<li>
+				<a class="navbar-brand" href="{{url_for("advanced_search")}}">
+					<span class="glyphicon glyphicon-search" aria-hidden="true"></span>&nbsp;Search &nbsp;&nbsp;
 	
-				 </a>
+				 </a>&nbsp;&nbsp;&nbsp;&nbsp;
 			<li>	
-				<a href="{{url_for("add_comic")}}">
+				<a class="navbar-brand" href="{{url_for("add_comic")}}">
 					<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>&nbsp;Add Comic
 				</a>
 		</ul>

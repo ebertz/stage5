@@ -1,57 +1,12 @@
 {% extends "base.html" %}
 {% block head %}
-<style type="text/css">
-div.tab {
-    overflow: hidden;
-    border: 1px solid #ccc;
-    background-color: #f1f1f1;
-}
 
-/* Style the buttons inside the tab */
-div.tab button {
-    background-color: inherit;
-    float: left;
-    border: none;
-    outline: none;
-    cursor: pointer;
-    padding: 14px 16px;
-    transition: 0.3s;
-}
-
-/* Change background color of buttons on hover */
-div.tab button:hover {
-    background-color: #ddd;
-}
-
-/* Create an active/current tablink class */
-div.tab button.active {
-    background-color: #ccc;
-}
-
-</style>
 
 
 {% endblock %}
 {% block page_content %}
 
-<script type="text/javascript">
-    function select_tab(evt, tab_name) {
-        //hide all tab content
-        tabcontent = document.getElementsByClassName("tabcontent");
-        for (i = 0; i < tabcontent.length; i++) {
-            tabcontent[i].style.display = "none";
-        }
-        //set all tabs inactive
-        tablinks = document.getElementsByClassName("tablinks");
-        for (i = 0; i < tablinks.length; i++) {
-            tablinks[i].className = tablinks[i].className.replace(" active", "");
-        }
-        // show current tab and set active
-        document.getElementById(tab_name).style.display = "block";
-        evt.currentTarget.className += " active";
-    }
 
-</script>
 
 <div class="tab">
   <button class="tablinks active" onclick="select_tab(event, 'Comic')"><h4>Comics</h4></button>
@@ -59,17 +14,44 @@ div.tab button.active {
   <button class="tablinks" onclick="select_tab(event, 'Review')"><h4>Reviews</h4></button>
 </div>
 
-<div id="Comic" class="tabcontent">
-  <h3>Comics</h3>
+<div id="Comic" class="tabcontent" style="width:400px" >
+  <form action="{{ url_for('results') }}" method="POST" style="float:right;text-align:right;">
+      <h3>Search Comics</h3>
+
+    Title<input type="text" name="title"><br>
+    Author<input type="text" name="author" ><br>
+    ID<input type="number" name="id" ><br><br>
+
+    Rating<br>
+    Min: <input type="number" name="min" style="width:100px"> Max: <input type="number" name="max" style="width:100px"><br>
+    <input type="hidden" name="type" value="c">
+    <input type="Submit" value="Submit">
+
+  </form>
 </div>
 
 <div id="Listing" class="tabcontent" style="display:None">
-  <h3>Listings</h3>
+  <h3>Search Listings</h3>
+   <form action="{{ url_for('results') }}" method="POST">
+    Seller<input type="text" name="seller"><br>
+    Title<input type="text" name="title"><br>
+    Author<input type="text" name="author"><br>
+    Price<br>
+    Min: <input type="number" name="min"> Max: <input type="number" name="max"><br>
+    <input type="hidden" name="type" value="l">
+    <input type="Submit" value="Submit">
+   </form>
 </div>
 
 <div id="Review" class="tabcontent" style="display:None">
-  <h3>Reviews</h3>
 
+  <h3>Search Reviews</h3>
+
+   <form action="{{ url_for('results') }}" method="POST">
+
+    <input type="hidden" name="type" value="r">
+    <input type="Submit" value="Submit">
+   </form>
 </div>
 
 

@@ -9,21 +9,75 @@ def home():
 	con.row_factory = sql.Row
 	cur = con.cursor()
 
-	q = request.args.get('q', type = str)
+	#q = request.args.get('q', type = str)
+	cur.execute("SELECT COUNT(*) from comics")
+	count = cur.fetchone()[0]
+	cur.execute("select * from comics limit 1000")
+	comics = cur.fetchall()
 
-	if q is not None:
-		q = '%' + q + '%'
-		cur.execute("SELECT COUNT(*) from comics where title like ?", (q,))
-		count = cur.fetchone()[0]
-		cur.execute("select * from comics where title like ? limit 1000", (q,))
+	cur.execute("SELECT COUNT(*) from reviews")
+	r_count = cur.fetchone()[0]
+	cur.execute("SELECT COUNT(*) from listings")
+	l_count = cur.fetchone()[0]
+	cur.execute("SELECT COUNT(*) from purchases")
+	p_count = cur.fetchone()[0]
+	cur.execute("SELECT COUNT(*) from users")
+	u_count = cur.fetchone()[0]
 
-	else:
-		cur.execute("SELECT COUNT(*) from comics")
-		count = cur.fetchone()[0]
-		cur.execute("select * from comics limit 1000")
+	#cur.execute("select * from purchases")
+	cur.execute("select u.name, c.title, c.author, p.* FROM users as u, comics as c, purchases as p WHERE p.buyer = u.UID AND c.CID = p.CID limit 1000")
+	purchases = cur.fetchall()
+	cur.execute("select * from users limit 1000")
+	users = cur.fetchall()
+	cur.execute("select r.*, u.name, c.title, c.author from reviews as r, users as u, comics as c WHERE r.userID = u.UID AND  r.CID = c.CID limit 1000")
+	reviews = cur.fetchall()
+	cur.execute("select l.*, u.name, c.title, c.author from listings as l, comics as c, users as u WHERE l.UID = u.UID AND c.CID = l.CID limit 1000")
+	listings = cur.fetchall()
 
-	rows = cur.fetchall()
-	return render_template('home.html', rows = rows, count = count, q = q)
+	return render_template('home.html', rows = comics, count = count, r_count = r_count, l_count = l_count, p_count = p_count, u_count = u_count,
+						   purchases = purchases, users = users, reviews = reviews, listings = listings)
+
+@app.route('/results', methods=['GET', 'POST'])
+def results():
+	con = sql.connect("database.db")
+	con.row_factory = sql.Row
+	cur = con.cursor()
+
+	type = request.form['type']
+	#build search query from strings
+	_select = "SELECT "
+	_from = "FROM "
+	_where = "WHERE "
+
+	#build query based on appropriate table
+	if type is 'c':
+		min_rating = request.form['min']
+		min_rating = request.form['max']
+		print(min_rating)
+		_select += "c.*"
+		_from += "comics as c"
+
+
+	elif type is 'l':
+		_select += "l.*"
+		_from += "listings as l"
+
+	elif type is 'r':
+		_select += "r.*"
+		_from += "reviews as r"
+
+
+	#drop where clause if no filters given
+	if _where is "WHERE":
+		_where = ""
+
+	#query = _select + _from + _where
+	#cur.execute(query)
+	#results = cur.fetchall()
+	results = None
+	return render_template('results.html', type=type, results=results)
+
+
 
 
 @app.route('/comic/<int:cid>')
