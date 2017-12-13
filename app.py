@@ -1,7 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for
 import sqlite3 as sql
+from werkzeug.utils import secure_filename
+import os
 app = Flask(__name__)
-
+UPLOAD_FOLDER = './uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+ALLOWED_EXTENSIONS = set(['txt'])
 
 @app.route('/')
 def home():
@@ -188,6 +192,46 @@ def submit_add_comic():
 		return redirect(url_for("home"))
 	except:
 		return redirect(url_for("add_comic"))
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/submit_bulk', methods=['GET','POST'])
+def submit_bulk_file():
+	if request.method == 'POST':
+		try:
+			f = request.files['bulkFile']
+		except:
+			return redirect(url_for("add_comic"))
+		# check if the post request has the file part
+		print(f.filename)
+
+		if allowed_file(f.filename):
+			filename = secure_filename(f.filename)
+			f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+			try:
+				with sql.connect("database.db") as con:
+					cur = con.cursor()
+					with open(os.path.join(app.config['UPLOAD_FOLDER'],filename)) as f:
+						for line in f:
+							value_array = line.split(',')
+							name = value_array[0]
+							author = value_array[1]
+							issueNumber = value_array[2]
+							description = value_array[3]
+							image = value_array[4]
+
+							check = cur.execute("INSERT INTO comics VALUES (?,?,?,?,?,?)", (None,name,author,issueNumber,description,image))
+							print(check)
+
+					f.close()
+				con.commit()
+				con.close()
+				return redirect(url_for("home"))
+			except:
+				return redirect(url_for("add_comic"))
+	return redirect(url_for("add_comic"))
 
 @app.route('/search')
 def advanced_search():
