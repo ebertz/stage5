@@ -98,7 +98,7 @@ def results():
 		max_price = request.form['max']
 		title = request.form['title']
 		author = request.form['author']
-		seller = request.form['seller']
+		id = request.form['id']
 
 		if min_price != "":
 			_where += "price > ?"
@@ -122,18 +122,55 @@ def results():
 			_where += " author LIKE ?"
 			arg_str = "%" + author + "%"
 			_args += tuple([arg_str])
-		if seller != "":
+		if id != "":
 			if _where != " WHERE ":
 				_where +=" AND "
-			_where += " UID = ?"
-			_args += tuple([int(seller)])
+			_where += " LID = ?"
+			_args += tuple([int(id)])
 		if _where != " WHERE ":
 			_where += " AND "
-			_where +=" c.CID = l.cid "
+		_where +=" c.CID = l.cid "
 
 	elif _type == 'r':
-		_select += "r.*"
-		_from += "reviews as r"
+		_select += "r.*, c.author, c.title "
+		_from += "reviews as r, comics as c "
+
+		min_rating = request.form['min']
+		max_rating = request.form['max']
+		title = request.form['title']
+		author = request.form['author']
+		rid = request.form['id']
+
+		if min_rating != "":
+			_where += "r.rating >= ?"
+			_args = _args + tuple([int(min_rating)])
+
+		if max_rating != "":
+			if _where != " WHERE ":
+				_where += " AND "
+			_where += "r.rating <= ?"
+			_args = _args + tuple([int(max_rating)])
+
+		if title != "":
+			if _where != " WHERE ":
+				_where += " AND "
+			_where += " c.title LIKE ?"
+			arg_str = "%" + title + "%"
+			_args += tuple([arg_str])
+		if author != "":
+			if _where != " WHERE ":
+				_where += " AND "
+			_where += " c.author LIKE ?"
+			arg_str = "%" + author + "%"
+			_args += tuple([arg_str])
+		if rid != "":
+			if _where != " WHERE ":
+				_where += " AND "
+			_where += " RID = ?"
+			_args += tuple([int(rid)])
+		if _where != " WHERE ":
+			_where += " AND "
+		_where += " c.CID = r.CID "
 
 
 	#drop where clause if no filters given

@@ -42,4 +42,24 @@ Search Results
 
 
 {% endif %}
+{% if type == "r" %}
+    	<table class="table-striped table-bordered">
+		<thead>
+			<td>Review Number</td>
+			<td>Title</td>
+			<td>Author</td>
+			<td>Rating</td>
+
+		</thead>
+	{% for review in results %}
+		<tr>
+			<td>{{ review["RID"] }}</td>
+			<td><a href="{{url_for('comic', cid=review['CID'])}}">{{ review["title"] }}</a></td>
+			<td>{{ review["author"] }}</td>
+            <td><script type="text/javascript"> for(i=0; i < {{ review["rating"] }}; i++) document.write("&#9733");</script> </td>
+
+		</tr>
+	{% endfor %}
+	</table>
+{% endif %}
 {% endblock %}
